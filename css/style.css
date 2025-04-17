@@ -89,7 +89,7 @@ header {
 #header-menu {
 	display: block;
 	
-	flex: 2 0 2;
+	flex: 2 0 5;
 	padding-left: 6em;
 	text-align: left;
 	z-index: 2;
