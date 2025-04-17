@@ -43,9 +43,9 @@ header {
 	flex-wrap: no-wrap;
 	position: fixed;
 	margin: auto;
-	left:10;
-  	top:10;
-  	right:10;
+	left:0;
+  	top:0;
+  	right:0;
   	height: 5em;
 	align-items: center;
    justify-content: space-between;
