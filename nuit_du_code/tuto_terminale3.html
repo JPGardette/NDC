@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+		<meta charset="UTF-8">
+		<meta name="Content-Type" content="UTF-8">
+		<meta name="Content-Language" content="fr">
+		<meta name="Subject" content="nsi">
+		<title>Tuto Terminale</title>
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />	
+	
+	</head>
+	
+	
+	<body>
+
+		
+		<header>
+
+		
+		<div id="header-titre">
+			<span>NDC - Claveille</span>
+		</div>
+			
+		<ul id="header-menu">
+			<li><a href="index-2.html">Accueil</a></li>
+			<li><a href="ref_pyxel.html">Référence Pyxel</a></li>
+			<li><a href="tuto_premiere1.html">Tuto Première ( sans POO )</a></li>
+			<li><a href="tuto_terminale1.html">Tuto Terminale ( avec POO )</a></li>
+			
+		</ul>
+	
+</header>
+		<nav id="menu_fixe">
+	<p><strong>TUTORIEL<br>Terminale</strong></p>
+	<ol>
+		<li><a href="tuto_terminale1.html">Créer une application</a></li>
+		<li><a href="tuto_terminale2.html">Interactions utilisateur</a></li>
+		<li><a href="tuto_terminale3.html">Des acteurs multiples</a></li>
+		<li><a href="tuto_terminale4.html">Gérer des collisions</a></li>
+		<li><a href="tuto_terminale5.html">Utiliser des images</a></li>
+		<li><a href="tuto_terminale6.html">Utiliser des sons</a></li>
+		<li><a href="tuto_terminale7.html">Décors et scrolling</a></li>
+	</ol>
+</nav>	
+		
+		<div id="super-div">
+			<div id="bloc-sommaire">
+				<div id="sommaire"></div>			
+			</div>
+			<section class="contenu_1">
+			
+			<h1>Tuto 3 : des acteurs multiples</h1>
+
+			<p>Un jeu comporte souvent des <em>sprites</em> du même type, comme par exemple les bombes larguées par un vaisseau, les pièces récoltées par un personnage, etc...</p>
+			
+			<h2>Un objet par acteur</h2>
+			
+			<p>Pour chacun de ces acteurs du même type, on créera un objet ayant ses propres attributs.</p>
+			 
+			<p>Voila par exemple une classe <code>Tir</code>, destinée à instancier les multiples objets modélisant des tirs du vaisseau du script précédent.</p>
+			
+			<div class="bloc_image">
+				<figure>
+					<img src="img/pyxel-tutoriel-02.gif" alt="Tuto 1" />				
+				</figure>			
+			</div>
+			
+			<p>Un tir est caractérisé par ses coordonnées. Les coordonnées initiales du tir sont déterminées à partir de celles du vaisseau, sachant que ces coordonnées
+			correspondent au coin en haut à gauche.<br>
+			On déplace ensuite le tir jusqu’à ce qu’il sorte de l’écran.</p>
+	
+			<pre><code class="language-python">
+class Tir:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.alive = True			# le tir est instancié dans l'état "en vol"
+
+    def is_alive(self):             # méthode qui permet de savoir si le tir est toujours "en vol".
+        return self.alive           # Renvoie un booléen indiquant l'état.
+
+    def move(self):
+
+        if self.y > 0:              # si il n'a pas atteint le haut de l'écran,
+            self.y = self.y - 2     # alors on le déplace,
+        else:
+            self.alive = False      # sinon on indique que le tir n'est plus "en vol".
+
+    def draw(self):
+
+        pyxel.rect(self.x, self.y, 1, 4, 10)
+        </code></pre>
+        			
+			<h2>Utilisation d'une liste d'objets</h2>
+			
+			<p>On utilisera alors une <strong>liste Python</strong> <var>liste_tirs</var> pour stocker les objets correspondant aux différents tirs "en cours" :</p>
+			
+			<ul>
+				<li>cette liste sera initialisée vide au lancement du jeu ( constructeur de la classe <code>Jeu</code> )</li>
+				<li>lors de l'appui sur la touche ESPACE, la méthode <code>move()</code> du vaisseau renverra une information qui indiquera au jeu d'<strong>ajouter à la liste</strong> <var>liste_tirs</var> un objet de type <code>Tir</code>.</li>
+				<li>dans la méthode <code>update()</code> de la classe <code>Jeu</code>, on <strong>parcourra la liste</strong> <var>liste_tirs</var> et on appellera la méthode <code>move()</code> de chacun de ses éléments.<br>
+				Pour tester si  un tir n'est plus "en vol", on utilise sa méthode <code>is_alive()</code>, qui indiquera au jeu de <em>supprimer l'objet correspondant de la liste</em>.</li>
+				<li>on fera de même dans la fonction <code>draw()</code> pour afficher les différents tirs avec la méthode <code>draw()</code> de la classe <code>Tir</code>.</li>			
+			</ul>
+			
+			<pre><code class="language-python">
+import pyxel
+
+class Vaisseau:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def move(self):
+        """déplacement avec les touches de direction"""
+
+        if pyxel.btn(pyxel.KEY_RIGHT):
+            if (self.x < 120) :
+                self.x = self.x + 1
+        if pyxel.btn(pyxel.KEY_LEFT):
+            if (self.x > 0) :
+                self.x = self.x - 1
+        if pyxel.btn(pyxel.KEY_DOWN):
+            if (self.y < 120) :
+                self.y = self.y + 1
+        if pyxel.btn(pyxel.KEY_UP):
+            if (self.y > 0) :
+                self.y = self.y - 1
+
+        if pyxel.btnr(pyxel.KEY_SPACE):     # si la touche "ESPACE" a été appuyée :
+            return self.x + 4, self.y - 2   # on signale un nouveau tir en renvoyant les coordonnées du vaisseau.
+
+        return None                         # Si on renvoie None, c'est qu'aucun nouveau tir n'a été déclenché.
+
+    def draw(self):
+
+        pyxel.rect(self.x, self.y, 8, 8, 1)
+
+class Tir:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.alive = True
+
+    def is_alive(self):            
+        return self.alive         
+
+    def move(self):
+
+        if self.y > 0:              
+            self.y = self.y - 2    
+        else:
+            self.alive = False     
+
+    def draw(self):
+
+        pyxel.rect(self.x, self.y, 1, 4, 10)
+
+class Jeu:
+
+    def __init__(self, h, l, titre):
+
+        pyxel.init(h, l, title = titre)
+
+        self.vaisseau = Vaisseau(60, 60)
+        self.liste_tirs = [] 						# liste des tirs, initialement vide
+
+        # Lancement du jeu
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+
+        v = self.vaisseau.move()                    # appel de la méthode move() du vaisseau, et récupération de son résultat renvoyé.
+        if v is not None:                           # Si ce résultat n'est pas None,
+            self.liste_tirs.append(Tir(v[0], v[1])) # c'est qu'il faut ajouter un tir à la liste des tirs.
+
+        for tir in self.liste_tirs:                 # Pour chaque tir dans la liste des tirs,
+            tir.move()                              # on appelle sa méthode move(),
+            if not tir.is_alive():                  # si le tir n'est plus "en vol",
+                self.liste_tirs.remove(tir)         # on le supprime de la liste des tirs.
+
+
+    def draw(self):
+
+        pyxel.cls(0)
+
+        self.vaisseau.draw()
+
+        for tir in self.liste_tirs:
+            tir.draw()
+
+
+########################
+#  PROGRAMME PRINCIPAL #
+########################
+
+Jeu(128, 128, "Super Jeu")
+
+			</code></pre>
+			
+			
+			<h2>A faire soi-même</h2>
+			
+	<div class="travail">
+			<p>A l'aide du même mécanisme, gérer le largage simultané par le vaisseau de bombes ( circulaires ) vers le bas de l'écran.</p>	
+	</div>
+			<a href="tuto_terminale4.html">Suivant</a>
+			
+			</section>
+		</div>
+	
+	<script type="text/javascript" src="../js/sommaire.js"></script>	
+	<script type="text/javascript" src="../js/prism.js"></script>		
+	</body>
+
+
+</html>
