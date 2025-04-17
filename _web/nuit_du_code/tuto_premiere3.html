@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+		<meta charset="UTF-8">
+		<meta name="Content-Type" content="UTF-8">
+		<meta name="Content-Language" content="fr">
+		<meta name="Subject" content="nsi">
+		<title>Tuto Première</title>
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />	
+	
+	</head>
+	
+	
+	<body>
+
+		
+		<header>
+
+		
+		<div id="header-titre">
+			<span>NDC - Claveille</span>
+		</div>
+			
+		<ul id="header-menu">
+			<li><a href="index-2.html">Accueil</a></li>
+			<li><a href="ref_pyxel.html">Référence Pyxel</a></li>
+			<li><a href="tuto_premiere1.html">Tuto Première ( sans POO )</a></li>
+			<li><a href="tuto_terminale1.html">Tuto Terminale ( avec POO )</a></li>
+			
+		</ul>
+	
+</header>
+		<nav id="menu_fixe">
+	<p><strong>TUTORIEL<br>Première</strong></p>
+	<ol>
+		<li><a href="tuto_premiere1.html">Créer une application</a></li>
+		<li><a href="tuto_premiere2.html">Interactions utilisateur</a></li>
+		<li><a href="tuto_premiere3.html">Des acteurs multiples</a></li>
+		<li><a href="tuto_premiere4.html">Gérer des collisions</a></li>
+		<li><a href="tuto_premiere5.html">Utiliser des images</a></li>
+		<li><a href="tuto_premiere6.html">Utiliser des sons</a></li>
+		<li><a href="tuto_premiere7.html">Décors et scrolling</a></li>
+	</ol>
+</nav>	
+		
+		<div id="super-div">
+			<div id="bloc-sommaire">
+				<div id="sommaire"></div>			
+			</div>
+			<section class="contenu_1">
+			
+			<h1>Tuto 3 : des acteurs multiples</h1>
+
+			<p>Un jeu comporte souvent des <em>sprites</em> du même type, comme par exemple les bombes larguées par un vaisseau, les pièces récoltées par un personnage, etc...</p>
+			
+			<h2>Un seul acteur en plus</h2>
+			
+			<p>Voila un script inspiré du précédent, qui permet maintenant de déclencher et animer un tir à partir de la position du vaisseau lorsque le joueur appuie sur la barre d'espace.</p>
+			
+			<div class="bloc_image">
+				<figure>
+					<img src="img/pyxel-tutoriel-02.gif" alt="Tuto 3" />				
+				</figure>			
+			</div>
+			
+			<p>Un tir est caractérisé par ses coordonnées. Les coordonnées initiales du tir sont déterminées à partir de celles du vaisseau, sachant que ces coordonnées
+			correspondent au coin en haut à gauche.<br>
+			On déplace ensuite le tir jusqu’à ce qu’il sorte de l’écran.</p>
+			
+			<pre><code class="language-python">
+import pyxel
+
+pyxel.init(128, 128, title="Super Jeu")
+
+###############################
+# FONCTIONS GÉRANT LE VAISSEAU #
+###############################
+
+def bouge_vaisseau():
+
+    global vaisseau_x, vaisseau_y, tir_x, tir_y, tire # la variable 'tire' sert à savoir si le tir a déjà été déclenché
+
+    if pyxel.btn(pyxel.KEY_RIGHT): 
+        if (vaisseau_x < 120) :
+            vaisseau_x = vaisseau_x + 1
+    if pyxel.btn(pyxel.KEY_LEFT):
+        if (vaisseau_x > 0) :
+            vaisseau_x = vaisseau_x - 1
+    if pyxel.btn(pyxel.KEY_DOWN):
+        if (vaisseau_y < 120) :
+            vaisseau_y = vaisseau_y + 1
+    if pyxel.btn(pyxel.KEY_UP):
+        if (vaisseau_y > 0) :
+            vaisseau_y = vaisseau_y - 1
+
+    if pyxel.btnr(pyxel.KEY_SPACE) and tire == False:   # si la touche "ESPACE" a été appuyée, et que le tir n'a pas déjà été déclenché :
+        tire = True                                     # alors on déclenche le tir,
+        tir_x = vaisseau_x + 4                          # en lui donnant comme coordonnées initiales
+        tir_y = vaisseau_y - 2                          # celles du milieu du vaisseau.
+
+def affiche_vaisseau():
+
+    # vaisseau (carre 8x8)
+    pyxel.rect(vaisseau_x, vaisseau_y, 8, 8, 1)
+
+###########################
+# FONCTIONS GÉRANT LE TIR #
+###########################
+
+def bouge_tir():
+
+    global tir_y, tire
+
+    if tire == True:            # si le tir a été déclenché :
+        if tir_y>0:             # si il n'a pas atteint le haut de l'écran,
+            tir_y = tir_y - 2   # alors on le déplace,
+        else:
+            tire = False        # sinon on "l'efface"
+
+def affiche_tir():
+
+    global tire
+    
+    if tire == True:
+        pyxel.rect(tir_x, tir_y, 1, 4, 10)
+
+##################
+# GESTION DU JEU #
+##################
+
+def update():
+
+    bouge_vaisseau()
+    bouge_tir()
+
+def draw():
+
+    pyxel.cls(0)
+
+    affiche_vaisseau()
+    affiche_tir()
+
+########################
+#  PROGRAMME PRINCIPAL #
+########################
+
+# position initiale du vaisseau
+# (origine des positions : coin haut gauche)
+vaisseau_x = 60
+vaisseau_y = 60
+
+tire = False
+
+# Lancement du jeu
+pyxel.run(update, draw)
+			</code></pre>
+			
+			<p>Le problème est qu'un seul tir n'est possible à la fois : comment faire en sorte que plusieurs tirs se déplacent dans la fenêtre <em>en même temps</em> ?</p>
+			
+		<div class="travail">
+			<p>Modifier le script pour qu'au moins un deuxième autre tir puisse être créé alors que le premier a déjà été déclenché.</p>		
+		</div>
+			
+			<h2>Une solution : les listes</h2>
+			
+			<p>Impossible de gérer toutes ces variables...</p>
+			
+			<p>Une solution possible va être alors d'utiliser une <strong>liste de listes Python</strong> <var>liste_tirs</var> pour gérer un nombre <em>quelconque</em> de tirs simultanés :</p>
+			
+			<ul>
+				<li>cette liste sera initialisée vide dans le programme principal</li>
+				<li>lors de l'appui sur la touche ESPACE, on <strong>ajoute à la liste</strong> <var>liste_tirs</var> une liste de deux éléments, correspondant aux coordonnées du nouveau tir</li>
+				<li>dans la fonction <code>update()</code>, on <strong>parcourra la liste</strong> <var>tirs</var> et on appellera la fonction <code>bouge_tir()</code> pour chacun des éléments de la liste,<em> passés en argument</em>.<br>
+				Si un tir sort de la fenêtre, on le <em>supprimera de la liste</em> : cela évite d'avoir à utiliser une variable <var>tire</var> comme précédemment pour gérer l'état d'un tir.</li>
+				<li>on fera de même dans la fonction <code>draw()</code> pour afficher les différents tirs avec la fonction </code>affiche_tir().</li>			
+			</ul>
+			
+			<pre><code class="language-python">
+import pyxel
+
+pyxel.init(128, 128, title="Super Jeu")
+
+###############################
+# FONCTIONS GÉRANT LE VAISSEAU #
+###############################
+
+def bouge_vaisseau():
+
+    global vaisseau_x, vaisseau_y
+
+    if pyxel.btn(pyxel.KEY_RIGHT):
+        if (vaisseau_x < 120) :
+            vaisseau_x = vaisseau_x + 1
+    if pyxel.btn(pyxel.KEY_LEFT):
+        if (vaisseau_x > 0) :
+            vaisseau_x = vaisseau_x - 1
+    if pyxel.btn(pyxel.KEY_DOWN):
+        if (vaisseau_y < 120) :
+            vaisseau_y = vaisseau_y + 1
+    if pyxel.btn(pyxel.KEY_UP):
+        if (vaisseau_y > 0) :
+            vaisseau_y = vaisseau_y - 1
+
+    if pyxel.btnr(pyxel.KEY_SPACE):                             # si la touche "ESPACE" a été appuyée :
+        liste_tirs.append([vaisseau_x + 4, vaisseau_y - 2])     # on ajoute à la liste 'liste_tirs' un nouveau tir
+
+
+def affiche_vaisseau():
+
+    # vaisseau (carre 8x8)
+    pyxel.rect(vaisseau_x, vaisseau_y, 8, 8, 1)
+
+###########################
+# FONCTIONS GÉRANT LE TIR #
+###########################
+
+def bouge_tir(tir):
+    ''' tir = liste de deux éléments.
+    tir[0] = x
+    tir[1] = y
+    '''
+
+    if tir[1]>0:                # si il n'a pas atteint le haut de l'écran,
+        tir[1] = tir[1] - 2     # alors on le déplace,
+    else:
+        liste_tirs.remove(tir)  # sinon on le supprime de la liste
+
+def affiche_tir(tir):
+
+    pyxel.rect(tir[0], tir[1], 1, 4, 10)
+
+##################
+# GESTION DU JEU #
+##################
+
+def update():
+
+    bouge_vaisseau()
+
+    for tir in liste_tirs:
+        bouge_tir(tir)
+
+def draw():
+
+    pyxel.cls(0)
+
+    affiche_vaisseau()
+
+    for tir in liste_tirs:
+        affiche_tir(tir)
+
+########################
+#  PROGRAMME PRINCIPAL #
+########################
+
+# position initiale du vaisseau
+# (origine des positions : coin haut gauche)
+vaisseau_x = 60
+vaisseau_y = 60
+
+liste_ tirs = [] # liste des tirs
+
+# Lancement du jeu
+pyxel.run(update, draw)
+			</code></pre>
+			
+			<p>On rappelle qu'<strong>une liste Python est un objet mutable</strong>, qu'il n'est donc pas nécessaire de passer comme argument aux fonctions; on évite du coup le recours à de nombreuses variables globales !</p>
+			
+			<h2>A faire soi-même</h2>
+			
+	<div class="travail">
+			<p>A l'aide du même mécanisme, gérer le largage simultané par le vaisseau de bombes ( circulaires ) vers le bas de l'écran.</p>	
+	</div>
+			<a href="tuto_premiere4.html">Suivant</a>
+			
+			</section>
+		</div>
+	
+	<script type="text/javascript" src="../js/sommaire.js"></script>	
+	<script type="text/javascript" src="../js/prism.js"></script>		
+	</body>
+
+
+</html>

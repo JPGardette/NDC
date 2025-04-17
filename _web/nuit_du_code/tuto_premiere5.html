@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html>
+
+	
+
+<head>
+
+		<meta charset="UTF-8">
+		<meta name="Content-Type" content="UTF-8">
+		<meta name="Content-Language" content="fr">
+		<meta name="Subject" content="nsi">
+		<title>Tuto Première</title>
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />	
+	
+	</head>
+	
+	
+	<body>
+
+		
+		<header>
+
+		
+		<div id="header-titre">
+			<span>NDC - Claveille</span>
+		</div>
+			
+		<ul id="header-menu">
+			<li><a href="index-2.html">Accueil</a></li>
+			<li><a href="ref_pyxel.html">Référence Pyxel</a></li>
+			<li><a href="tuto_premiere1.html">Tuto Première ( sans POO )</a></li>
+			<li><a href="tuto_terminale1.html">Tuto Terminale ( avec POO )</a></li>
+		
+		</ul>
+	
+</header>
+		<nav id="menu_fixe">
+	<p><strong>TUTORIEL<br>Première</strong></p>
+	<ol>
+		<li><a href="tuto_premiere1.html">Créer une application</a></li>
+		<li><a href="tuto_premiere2.html">Interactions utilisateur</a></li>
+		<li><a href="tuto_premiere3.html">Des acteurs multiples</a></li>
+		<li><a href="tuto_premiere4.html">Gérer des collisions</a></li>
+		<li><a href="tuto_premiere5.html">Utiliser des images</a></li>
+		<li><a href="tuto_premiere6.html">Utiliser des sons</a></li>
+		<li><a href="tuto_premiere7.html">Décors et scrolling</a></li>
+	</ol>
+</nav>	
+		
+		<div id="super-div">
+			<div id="bloc-sommaire">
+				<div id="sommaire"></div>			
+			</div>
+			<section class="contenu_1">
+			
+			<h1>Tuto 5 : utiliser des images</h1>
+			
+			<p>Pyxel permet l'utilisation d'images à la place de simples formes.</p>
+			
+			<p>Il est possible de charger des images de format .jpg ou .png à partir de fichier individuels, mais lors de la Nuit du c0de, vous n'aurez le droit d'utiliser que les ressources fournies.</p>
+			
+			<h2>Les ressources Pyxel</h2>
+			
+			<p>Ces ressources ( images, sons, ...) se trouvent dans des fichiers au format <code>.pyxres</code>; pour pouvoir les utiliser, il faut préalablement charger le fichier correspondant, par exemple :</p>
+			
+			<pre><code class="language-python">
+pyxel.load("ressources.pyxres")
+			</code></pre>
+
+			<div class="remarque">
+				<p>Cette instruction est à placer <em>après</em> l'instruction d'initialisation de Pyxel <code>pyxel.init()</code>.</p>			
+			</div>
+			
+			<p>Il est possible de ne charger que les ressources que l'on va effectivement utiliser, en précisant par <code>True</code> ou <code>False</code> le chargement, dans l'ordre, des images, de la 
+			tilemap ( voir plus loin ), des sons ou de la musique.</p>
+			 
+			<p>Par exemple, pour ne charger que les images, on écrirait :</p>
+			
+			<pre><code class="language-python">
+pyxel.load("ressources.pyxres", True, False, False, False)
+			</code></pre>
+			
+			<h2>Cas des ressources images</h2>
+			
+			<p>Les ressources images se présentent sous la forme d'une <em>banque d'images</em>, c'est à dire un regroupement d'images dans un même ensemble.</p>
+			
+			<p>Une banque d'images est un ensemble de tuiles ( <em>tiles</em> ), c'est à dire de petites images (en général) carrées disposées sur une grille de 256 x 256 pixels.</p>
+			
+			<p>Une tuile peut représenter un <em>sprite</em> ou un élément de décor, avec lequel on peut interagir ou non.<br>
+			L'ensemble complet des tuiles disponibles pour une utilisation dans une zone de jeu est appelé un jeu de tuiles ( <em>tileset</em> ).</p>
+			
+			<p>Avec Pyxel, un tileset peut comprendre jusqu'à 3 banques d'images différentes ( numérotées de 0 à 2 ). La première est chargée par défaut dans la banque 0.</p>
+			
+			<h2>Organisation d'une banque d'images</h2>
+			
+			<p>L'organisation est fondamentale à connaître, car on adresse une image en précisant les coordonnées (x, y) dans la grille de son pixel supérieur gauche, sa taille horizontale et
+			 sa taille verticale ( en pixels ).</p>
+			
+			<div class="image_cote">
+				<div class="texte">				
+					<p>Par exemple : la banque d'images dans le fichier <code>ressources.pyxres</code> contient quelques images, toutes de taille 8 x 8 pixels.</p> 
+				
+					<ul>
+						<li>la première image ( un vaisseau ) est donc adressée par le pixel (0, 0), et à une taille de 8 pixels horizontaux et 8 pixels verticaux.</li>
+						<li>la deuxième ( un tir )	par le pixel (8, 0) ( même taille )</li>
+						<li>la troisième par (0, 8) ( même taille )</li>
+						<li>etc...</li>
+					</ul>
+				</div>
+				<figure>
+					<img src="img/tileset.png" alt="Tileset" />				
+				</figure>
+			</div>
+			
+			<h2>Modification d'une banque d'images</h2>
+			
+			<p>Pyxel propose un éditeur pour créer ou modifier des images utilisables dans des applications Pyxel. ( voir la référence Pyxel).</p>
+			
+			<div class="remarque">
+				<p>Si sous Linux la commande <code>pyxel edit XXXX.pyxres</code> ne fonctionne pas, essayer : <code>~/.local/bin/pyxel edit XXXX.pyxres</code></p>			
+			</div>
+			
+			<h2>Placement dans la fenêtre d'une image de la banque</h2>
+			
+			<p>Pour placer une image dans la fenêtre, il faut en fait <em>copier une partie de la banque d'images vers une position (x, y) dans la fenêtre</em> avec la méthode <code>pyxel.blt()</code> :
+			
+			<pre><code class="language-python">
+pyxel.blt(x, y, numéro banque, x(image), y(image), taille horizontale, taille verticale, [couleur de transparence])
+			</code></pre>
+			
+			<p>Exemple :</p>
+			
+			<pre><code class="language-python">
+pyxel.blt(vaisseau_x, vaisseau_y, 0, 0, 0, 8, 8, 0) # remplace le carré 8x8 représentant le vaisseau par une image de même taille
+			</code></pre>
+						
+			<p><var>(x, y)</var> représente là aussi la coordonnée du pixel supérieur gauche de la fenêtre à partir duquel s'affichera l'image.</p>
+			
+			<p>Si les dimensions de l’image sont indiquées comme négatives, la copie de l’image sera inversée horizontalement et/ou verticalement.</p>
+
+			<p>Il est également possible de spécifier une couleur de transparence, qui ne sera donc pas dessinée à l’écran et "laissera apparaître" son arrière-plan. On a choisi ici la couleur noire 
+			(code : 0) qui est la couleur du fond de la fenêtre.</p>
+
+						
+	<div class="travail">
+			<p>Modifier le script du jeu précédent pour qu'il utilise des images pour le vaisseau, les ennemis et les tirs; les explosions seront toujours représentées par des cercles.</p>
+			
+			<p>Le fichier de ressources est <a href="code/ressources.html">ici</a>.</p>	
+	</div>
+	
+			<h2>Animer les sprites</h2>
+			
+			<p>Pour animer les sprites, on peut se servir d'une méthode similaire à l'animation des explosions, sauf qu'ici, on fera évoluer l'image affichée à chaque <em>frame</em>.</p>
+			
+			<p>Par exemple, on trouve dans la banque d'images 3 sprites différents pour les ennemis, aux coordonnées (0, 8), (0, 16) et (0, 24) de la banque d'images ( voir image ci-dessus ).</p>
+			
+			<p>Pour animer un ennemi, on fera alors alterner en boucle la valeur de y<sub>image</sub> entre 8, 16 et 24 pour sélectionner une image différente à afficher.</p>
+			
+			<p>Ce calcul utilisera le nombre d'images indiquées par l'attribut <var>frame_count</var> de Pyxel; par exemple, pour modifier l'image toutes les 3 frames ( soit 1/10è de seconde à 30 fps ) :</p>	
+			
+			<pre><code class="language-python">
+coeff = pyxel.frame_count // 3 % 3 # valeur alternant entre 1, 2 et 3 en boucle toutes les 1/10ème de seconde
+pyxel.blt(ennemi[0], ennemi[1], 0, 0, 8*coeff, 8, 8, 0) # la coordonnée y de l'image est donnée par  8*coeff et alterne entre 8, 16 et 24
+			</code></pre>
+	
+	<div class="travail">
+			<ul>
+				<li>Compléter le script pour animer les ennemis.</li>
+				
+				<li>Servez-vous de l'éditeur d'images pour créer 3 images de tailles 8 x 8 pixels représentant le jet des réacteurs du vaisseau; utiliser alors ces images pour animer ce jet.</li>
+				
+				<li>Et pour aller encore plus loin : créez deux images différentes du vaisseau, l'une lorsqu'il pivote sur sa gauche, l'autre sur sa droite; servez-vous en pour afficher une image
+			 différente lorsque le vaisseau se déplace vers la gauche ou la droite de la fenêtre.</li>
+			</ul>
+	</div>
+			
+			<a href="tuto_premiere6.html">Suivant</a>
+			
+			</section>
+		</div>
+	
+	<script type="text/javascript" src="../js/sommaire.js"></script>	
+	<script type="text/javascript" src="../js/prism.js"></script>		
+	</body>
+
+
+
+</html>
